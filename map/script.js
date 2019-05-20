@@ -1,4 +1,11 @@
 const mymap = L.map("mapid").setView([33.749, -84.388], 13);
+let data = null;
+let div = d3
+  .select("body")
+  .append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0);
+
 // const data = require("../scrape/json/COBRA-2019.json");
 
 L.tileLayer(
@@ -13,20 +20,92 @@ L.tileLayer(
   }
 ).addTo(mymap);
 
-function addMarkers(json) {
-  json.forEach((object, i) => {
-    let marker = L.marker([object.latitude, object.longitude]).addTo(mymap);
-    marker.bindPopup(
-      `<p>${object.occurDate}</p><p>${object.location}</p><p>${
-        object.UCRliteral
-      }</p>`
-    ).openPopup;
+let svg = d3
+    .select(mymap.getPanes().overlayPane)
+    .append("svg")
+    .attr("id", "leaflet-overlay"),
+  g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+async function addMarkers() {
+  try {
+    data = await d3.json("../json/COBRA-2019.json");
+    data.forEach(object => {
+      object.LatLng = new L.LatLng(object.latitude, object.longitude);
+    });
+    console.log(data);
+
+    let feature = g
+      .selectAll("circle")
+      .data(data)
+      .enter()
+      .append("circle")
+      .style("stroke", "red")
+      .style("opacity", 0.6)
+      .style("fill", "red")
+      .attr("r", 5)
+      .on("mouseover", d => {
+        div
+          .transition()
+          .duration(100)
+          .style("opacity", 0.9);
+        div
+          .html(
+            `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
+          )
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY - 28 + "px");
+      })
+      .on("mouseout", d => {
+        div
+          .transition()
+          .duration(100)
+          .style("opacity", 0);
+      });
+
+    mymap.on("zoomstart", () => {
+      updateMove(feature);
+    });
+
+    mymap.on("moveend", () => {
+      updateMove(feature);
+    });
+
+    updateMove(feature);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function updateMove(feature) {
+  console.log("map was dragged");
+  let newBoundingBox = mymap.getBounds();
+  let x = mymap.latLngToLayerPoint(newBoundingBox._southWest);
+  let y = mymap.latLngToLayerPoint(newBoundingBox._northEast);
+  x = x.x;
+  y = y.y;
+  console.log(x);
+  svg.attr("transform", () => {
+    return `translate(${x},${y})`;
+  });
+
+  feature.attr("transform", function(d) {
+    return `translate(${mymap.latLngToLayerPoint(d.LatLng).x -
+      x}, ${mymap.latLngToLayerPoint(d.LatLng).y - y})`;
   });
 }
 
-async function getData() {
-  const data = await fetch("../json/COBRA-2019.json");
-  const json = await data.json();
-  addMarkers(json);
-}
-getData();
+// function updateZoom(feature) {
+//   feature.attr("transform", function(d) {
+//     return `translate(${
+//       mymap.latLngToLayerPoint(d.LatLng).x
+//     }, ${mymap.latLngToLayerPoint(d.LatLng).y})`;
+//   });
+// }
+
+addMarkers();
+// async function getData() {
+//   const data = await fetch("../json/COBRA-2019.json");
+//   const json = await data.json();
+//   addMarkers(json);
+// }
+// getData();
