@@ -6,8 +6,6 @@ let div = d3
   .attr("class", "tooltip")
   .style("opacity", 0);
 
-// const data = require("../scrape/json/COBRA-2019.json");
-
 L.tileLayer(
   "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}",
   {
@@ -28,11 +26,11 @@ let svg = d3
 
 async function addMarkers() {
   try {
-    data = await d3.json("../json/COBRA-2019.json");
+    // data = await d3.json("../json/COBRA-2019.json");
+    data = await d3.json("COBRA-2019.json");
     data.forEach(object => {
       object.LatLng = new L.LatLng(object.latitude, object.longitude);
     });
-    console.log(data);
 
     let feature = g
       .selectAll("circle")
@@ -53,59 +51,117 @@ async function addMarkers() {
             `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
           )
           .style("left", d3.event.pageX + "px")
-          .style("top", d3.event.pageY - 28 + "px");
+          .style("top", d3.event.pageY + "px");
       })
       .on("mouseout", d => {
         div
           .transition()
           .duration(100)
           .style("opacity", 0);
+      })
+      .on("touchstart", d => {
+        div
+          .transition()
+          .duration(100)
+          .style("opacity", 0.9);
+        div
+          .html(
+            `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
+          )
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY + "px");
       });
 
     mymap.on("zoomstart", () => {
-      updateMove(feature);
+      update(feature);
     });
 
     mymap.on("moveend", () => {
-      updateMove(feature);
+      update(feature);
     });
 
-    updateMove(feature);
+    update(feature);
   } catch (err) {
     console.error(err);
   }
 }
 
-function updateMove(feature) {
-  console.log("map was dragged");
-  let newBoundingBox = mymap.getBounds();
-  let x = mymap.latLngToLayerPoint(newBoundingBox._southWest);
-  let y = mymap.latLngToLayerPoint(newBoundingBox._northEast);
-  x = x.x;
-  y = y.y;
-  console.log(x);
-  svg.attr("transform", () => {
-    return `translate(${x},${y})`;
-  });
-
+let update = feature => {
   feature.attr("transform", function(d) {
-    return `translate(${mymap.latLngToLayerPoint(d.LatLng).x -
-      x}, ${mymap.latLngToLayerPoint(d.LatLng).y - y})`;
+    return `translate(${
+      mymap.latLngToLayerPoint(d.LatLng).x
+    }, ${mymap.latLngToLayerPoint(d.LatLng).y})`;
   });
-}
+  let group = document.querySelector(".leaflet-zoom-hide");
+  let groupBounds = group.getBBox();
+  svg
+    .attr("width", groupBounds.width)
+    .attr("height", groupBounds.height)
+    .attr("style", `top:${groupBounds.y}px; left:${groupBounds.x}px;`);
 
-// function updateZoom(feature) {
-//   feature.attr("transform", function(d) {
-//     return `translate(${
-//       mymap.latLngToLayerPoint(d.LatLng).x
-//     }, ${mymap.latLngToLayerPoint(d.LatLng).y})`;
-//   });
-// }
+  let d3Group = d3.select(".leaflet-zoom-hide");
+  d3Group.attr(
+    "style",
+    `transform:translate(${-groupBounds.x}px, ${-groupBounds.y}px`
+  );
+};
+let checked = [];
+let handleFilters = cb => {
+  console.log(cb.checked);
+  if (cb.checked == true) {
+    checked.push(cb.name);
+  } else {
+    let position = checked.indexOf(cb.name);
+    if (~position) {
+      checked.splice(position, 1);
+    }
+  }
+  console.log(checked);
+  let feature = d3
+    .select("g")
+    .selectAll("circle")
+    .data(
+      data.filter(function(d) {
+        // return d.UCRliteral == "LARCENY-FROM VEHICLE";
+        return checked.includes(d.UCRliteral);
+      })
+    )
+    .exit()
+    .remove()
+    .enter()
+    .append("circle")
+    .style("stroke", "red")
+    .style("opacity", 0.6)
+    .style("fill", "red")
+    .attr("r", 5)
+    .on("mouseover", d => {
+      div
+        .transition()
+        .duration(100)
+        .style("opacity", 0.9);
+      div
+        .html(`<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`)
+        .style("left", d3.event.pageX + "px")
+        .style("top", d3.event.pageY + "px");
+    })
+    .on("mouseout", d => {
+      div
+        .transition()
+        .duration(100)
+        .style("opacity", 0);
+    })
+    .on("touchstart", d => {
+      div
+        .transition()
+        .duration(100)
+        .style("opacity", 0.9);
+      div
+        .html(`<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`)
+        .style("left", d3.event.pageX + "px")
+        .style("top", d3.event.pageY + "px");
+    });
+
+  update(feature);
+};
 
 addMarkers();
-// async function getData() {
-//   const data = await fetch("../json/COBRA-2019.json");
-//   const json = await data.json();
-//   addMarkers(json);
-// }
-// getData();
