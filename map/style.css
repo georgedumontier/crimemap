@@ -11,6 +11,7 @@ body {
 #mapid {
   width: 100vw;
   height: 100vh;
+  cursor: default;
 }
 #leaflet-overlay {
   position: relative;
@@ -36,6 +37,17 @@ div.tooltip {
   top: 2rem;
   right: 2rem;
   padding: 25px;
-  background: white;
+  background: rgba(248, 248, 255, 0.8);
   z-index: 999;
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  grid-gap: 10px;
+  align-items: center;
+}
+label {
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+input {
+  cursor: pointer;
 }
