@@ -8,6 +8,8 @@ let div = d3
 let checked = ["LARCENY-NON VEHICLE"];
 
 L.tileLayer(
+  // "https://api.tiles.mapbox.com/styles/mapbox/streets-v11/{z}/{x}/{y}.png?access_token={accessToken}",
+  // "https://api.mapbox.com/styles/v1/georgedumontier/cjw9i8dg505h71cnui04lw1dz/tiles/{z}/{x}/{y}?access_token={accessToken}",
   "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}",
   {
     attribution:
@@ -43,24 +45,26 @@ async function addMarkers() {
     });
 
     let circles = crimeDots.selectAll("circle").data(data);
+    let colors = {
+      "LARCENY-FROM VEHICLE": "#e41a1c",
+      "LARCENY-NON VEHICLE": "#377eb8",
+      "ROBBERY-PEDESTRIAN": "#4daf4a",
+      "AUTO THEFT": "#984ea3",
+      "AGG ASSAULT": "#ff7f00",
+      "ROBBERY-COMMERCIAL": "#ffd92f",
+      "ROBBERY-RESIDENCE": "#a65628",
+      "BURGLARY-RESIDENCE": "#f781bf"
+    };
 
     circles
       .enter()
       .append("circle")
-      .style("stroke", "red")
-      .style("opacity", 0.6)
-      .style("fill", "red")
-      .attr("r", 5)
-      .style("transition", "0.3s ease all")
       .on("mouseover", function(d) {
-        d3.select(this)
-          .style("fill", "blue")
-          .style("opacity", 1)
-          .attr("r", 8);
+        d3.select(this).attr("class", "selected-dot");
         div
           .transition()
           .duration(100)
-          .style("opacity", 0.9);
+          .style("opacity", 0.8);
         div
           .html(
             `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
@@ -70,27 +74,45 @@ async function addMarkers() {
       })
       .on("mouseout", function(d) {
         d3.select(this)
-          .style("fill", "red")
-          .style("opacity", 0.6)
-          .attr("r", 5);
+          .attr("class", "")
+          .style("fill", d => colors[d.UCRliteral])
+          .style("opacity", 0.8)
+          .attr("r", 6)
+          .style("stroke-opacity", 0);
         div
           .transition()
           .duration(100)
           .style("opacity", 0);
       })
-      .on("touchstart", d => {
+      .on("click", function(d) {
+        d3.select(".selected-dot").attr("class", "");
+        d3.select(this).attr("class", "selected-dot");
         div
           .transition()
           .duration(100)
-          .style("opacity", 0.9);
+          .style("opacity", 0.7);
         div
           .html(
             `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
           )
           .style("left", d3.event.pageX + "px")
           .style("top", d3.event.pageY + "px");
+      })
+      .on("touchend", function(d) {
+        d3.select(this)
+          .style("fill", d => colors[d.UCRliteral])
+          .style("opacity", 0.8)
+          .attr("r", 6)
+          .style("stroke-opacity", 0);
+        div
+          .transition()
+          .duration(100)
+          .style("opacity", 0);
       });
 
+    d3.selectAll("circle").style("fill", d => {
+      return colors[d.UCRliteral];
+    });
     circles.exit().remove();
 
     //reposition map when zoomed or dragged
@@ -102,7 +124,7 @@ async function addMarkers() {
   }
 }
 
-let repositionMap = circles => {
+let repositionMap = () => {
   crimeDots.selectAll("circle").attr("transform", d => {
     return `translate(${mymap.latLngToLayerPoint(d.LatLng).x}, ${
       mymap.latLngToLayerPoint(d.LatLng).y
@@ -120,6 +142,11 @@ let repositionMap = circles => {
     "style",
     `transform:translate(${-groupBounds.x}px, ${-groupBounds.y}px`
   );
+  // console.log(groupBounds.y);
+  // d3.select(".tooltip").attr(
+  //   "style",
+  //   `top:${-groupBounds.y}px; left:${groupBounds.x}px;`
+  // );
 };
 
 //handle check box clicks to update data
@@ -137,3 +164,12 @@ let handleFilters = cb => {
 
 //initialize
 addMarkers();
+
+//event listeners
+let legend = document.querySelector("#key");
+let filterButton = document.querySelector("#key h4");
+let caret = document.querySelector(".caret");
+filterButton.addEventListener("click", () => {
+  legend.classList.toggle("open");
+  caret.classList.toggle("caret-close");
+});

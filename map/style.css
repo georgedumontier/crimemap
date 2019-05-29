@@ -7,14 +7,29 @@ body {
   padding: 0;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 #mapid {
   width: 100vw;
   height: 100vh;
   cursor: default;
+  overflow: hidden;
 }
 #leaflet-overlay {
   position: relative;
+}
+g.leaflet-zoom-hide > circle {
+  r: 6;
+  opacity: 0.8;
+  transition: 0.2s ease r;
+  stroke: black;
+  stroke-opacity: 0;
+  stroke-width: 2;
+}
+g.leaflet-zoom-hide > .selected-dot {
+  opacity: 1 !important;
+  stroke-opacity: 1 !important;
+  r: 8 !important;
 }
 div.tooltip {
   position: absolute;
@@ -25,7 +40,7 @@ div.tooltip {
   font: 1.4rem sans-serif;
   background: ghostwhite;
   border: 0px;
-  border-radius: 8px;
+  /* border-radius: 8px; */
   pointer-events: none;
   z-index: 999;
 }
@@ -34,15 +49,46 @@ div.tooltip {
 }
 #key {
   position: absolute;
-  top: 2rem;
-  right: 2rem;
-  padding: 25px;
+  top: 0;
+  right: 0;
   background: rgba(248, 248, 255, 0.8);
   z-index: 999;
   display: grid;
   grid-template-columns: 20px 1fr;
   grid-gap: 10px;
   align-items: center;
+  overflow: hidden;
+  font-family: sans-serif;
+  max-height: 2.5rem;
+  box-shadow: 4px 4px 2px solid #666;
+  transition: 0.3s ease all;
+}
+#key h4 {
+  grid-column-end: span 2;
+  text-align: center;
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+  margin: 0;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+.caret {
+  width: 0;
+  height: 0;
+  display: inline-block;
+  border-left: 0.5rem solid transparent;
+  border-right: 0.5rem solid transparent;
+  border-top: 0.5rem solid black;
+  position: relative;
+  bottom: 0.2rem;
+}
+.caret-close {
+  border-bottom: 0.5rem solid black;
+  border-top: none;
+}
+.open {
+  padding: 20px;
+  max-height: 800px !important;
 }
 label {
   font-size: 1.4rem;
