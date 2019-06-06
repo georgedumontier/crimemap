@@ -31,8 +31,8 @@ let crimeDots = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 async function addMarkers() {
   try {
-    // data = await d3.json("../json/COBRA-2019.json");
-    let data = await d3.json("COBRA-2019.json");
+    data = await d3.json("COBRA-2019.json");
+    //let data = await d3.json("COBRA-2019.json");
 
     //filter data based on the checked array
     data = data.filter(d => {
@@ -64,7 +64,7 @@ async function addMarkers() {
         div
           .transition()
           .duration(100)
-          .style("opacity", 0.8);
+          .style("opacity", 0.9);
         div
           .html(
             `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
@@ -90,25 +90,25 @@ async function addMarkers() {
         div
           .transition()
           .duration(100)
-          .style("opacity", 0.7);
+          .style("opacity", 0.9);
         div
           .html(
             `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
           )
           .style("left", d3.event.pageX + "px")
           .style("top", d3.event.pageY + "px");
-      })
-      .on("touchend", function(d) {
-        d3.select(this)
-          .style("fill", d => colors[d.UCRliteral])
-          .style("opacity", 0.8)
-          .attr("r", 6)
-          .style("stroke-opacity", 0);
-        div
-          .transition()
-          .duration(100)
-          .style("opacity", 0);
       });
+    // .on("touchend", function(d) {
+    //   d3.select(this)
+    //     .style("fill", d => colors[d.UCRliteral])
+    //     .style("opacity", 0.8)
+    //     .attr("r", 6)
+    //     .style("stroke-opacity", 0);
+    //   div
+    //     .transition()
+    //     .duration(100)
+    //     .style("opacity", 0);
+    // });
 
     d3.selectAll("circle").style("fill", d => {
       return colors[d.UCRliteral];
@@ -118,13 +118,40 @@ async function addMarkers() {
     //reposition map when zoomed or dragged
     mymap.on("zoomstart", () => repositionMap(circles));
     mymap.on("moveend", () => repositionMap(circles));
+    mymap.on("move", repositionToolTip);
+    mymap.on("zoomstart", () => {
+      div.style("opacity", 0);
+    });
+    mymap.on("zoomend", () => {
+      div.style("opacity", 0.9);
+    });
     repositionMap(circles);
   } catch (err) {
     console.error(err);
   }
 }
 
+let repositionToolTip = () => {
+  let selectedDot = d3.select("circle.selected-dot");
+
+  if (selectedDot._groups[0][0] !== null) {
+    let toolTipLayerPoint = mymap.latLngToLayerPoint(
+      selectedDot._groups[0][0].__data__.LatLng
+    );
+    let toolTipPxCoords = mymap.layerPointToContainerPoint(toolTipLayerPoint);
+
+    div.style("top", toolTipPxCoords.y + "px");
+    div.style("left", toolTipPxCoords.x + "px");
+  }
+};
+
 let repositionMap = () => {
+  // console.log(d3.select(".selected-dot"));
+  // div.style(
+  //   "left",
+  //   `${mymap.latLngToLayerPoint(d3.select(".selected-dot").LatLng).x}px;`
+  // );
+
   crimeDots.selectAll("circle").attr("transform", d => {
     return `translate(${mymap.latLngToLayerPoint(d.LatLng).x}, ${
       mymap.latLngToLayerPoint(d.LatLng).y
@@ -142,6 +169,11 @@ let repositionMap = () => {
     "style",
     `transform:translate(${-groupBounds.x}px, ${-groupBounds.y}px`
   );
+  // div.attr(
+  //   "style",
+  //   `transform:translate(${-groupBounds.x}px, ${-groupBounds.y}px)`
+  // );
+
   // console.log(groupBounds.y);
   // d3.select(".tooltip").attr(
   //   "style",
