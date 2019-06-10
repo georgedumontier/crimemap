@@ -6,20 +6,28 @@ let div = d3
   .attr("class", "tooltip")
   .style("opacity", 0);
 let checked = ["LARCENY-NON VEHICLE"];
+let dateFilter = "This year";
+let justMoved = false;
+let today = new Date();
 
 L.tileLayer(
   // "https://api.tiles.mapbox.com/styles/mapbox/streets-v11/{z}/{x}/{y}.png?access_token={accessToken}",
   // "https://api.mapbox.com/styles/v1/georgedumontier/cjw9i8dg505h71cnui04lw1dz/tiles/{z}/{x}/{y}?access_token={accessToken}",
-  "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}",
+  "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png",
+
+  //"https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}",
   {
     attribution:
-      'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Map tiles by <a href="https://stamen.com/">Stamen Design</a> under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.',
+    //'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
     id: "mapbox.streets",
     accessToken:
       "pk.eyJ1IjoiZ2VvcmdlZHVtb250aWVyIiwiYSI6ImNqdnBpbjkxNzI5OWM0M211amVkaHFoZncifQ.8ZUHKNHHj7tm9UuMvZZigg"
   }
 ).addTo(mymap);
+// const layer = new L.StamenTileLayer("toner");
+// mymap.addLayer(L.StamenTileLayer("toner", { detectRetina: true }));
 
 let svg = d3
   .select(mymap.getPanes().overlayPane)
@@ -39,6 +47,13 @@ async function addMarkers() {
       return checked.includes(d.UCRliteral);
     });
 
+    //filter data based on date
+    console.log(data);
+
+    // data = data.filter(d => {
+    //   return d.()
+    // });
+
     //give the data a Leaflet.js-friendly LatLng object
     data.forEach(object => {
       object.LatLng = new L.LatLng(object.latitude, object.longitude);
@@ -56,10 +71,20 @@ async function addMarkers() {
       "BURGLARY-RESIDENCE": "#f781bf"
     };
 
+    //hide box when user clicks off circle
+    d3.select("#mapid").on("touchend", function() {
+      if (justMoved == false) {
+        div.style("opacity", 0);
+        d3.select(".selected-dot").attr("class", "");
+      } else {
+        justMoved = false;
+      }
+    });
+
     circles
       .enter()
       .append("circle")
-      .on("mouseover", function(d) {
+      .on("mouseenter", function(d) {
         d3.select(this).attr("class", "selected-dot");
         div
           .transition()
@@ -72,19 +97,11 @@ async function addMarkers() {
           .style("left", d3.event.pageX + "px")
           .style("top", d3.event.pageY + "px");
       })
-      .on("mouseout", function(d) {
-        d3.select(this)
-          .attr("class", "")
-          .style("fill", d => colors[d.UCRliteral])
-          .style("opacity", 0.8)
-          .attr("r", 6)
-          .style("stroke-opacity", 0);
-        div
-          .transition()
-          .duration(100)
-          .style("opacity", 0);
+      .on("mouseleave", function(d) {
+        d3.select(this).attr("class", "");
+        div.style("opacity", 0).style("top", "-500px");
       })
-      .on("click", function(d) {
+      .on("click touchstart", function(d) {
         d3.select(".selected-dot").attr("class", "");
         d3.select(this).attr("class", "selected-dot");
         div
@@ -98,17 +115,6 @@ async function addMarkers() {
           .style("left", d3.event.pageX + "px")
           .style("top", d3.event.pageY + "px");
       });
-    // .on("touchend", function(d) {
-    //   d3.select(this)
-    //     .style("fill", d => colors[d.UCRliteral])
-    //     .style("opacity", 0.8)
-    //     .attr("r", 6)
-    //     .style("stroke-opacity", 0);
-    //   div
-    //     .transition()
-    //     .duration(100)
-    //     .style("opacity", 0);
-    // });
 
     d3.selectAll("circle").style("fill", d => {
       return colors[d.UCRliteral];
@@ -132,6 +138,8 @@ async function addMarkers() {
 }
 
 let repositionToolTip = () => {
+  justMoved = true;
+  div.style("opacity", 0.9);
   let selectedDot = d3.select("circle.selected-dot");
 
   if (selectedDot._groups[0][0] !== null) {
@@ -146,12 +154,6 @@ let repositionToolTip = () => {
 };
 
 let repositionMap = () => {
-  // console.log(d3.select(".selected-dot"));
-  // div.style(
-  //   "left",
-  //   `${mymap.latLngToLayerPoint(d3.select(".selected-dot").LatLng).x}px;`
-  // );
-
   crimeDots.selectAll("circle").attr("transform", d => {
     return `translate(${mymap.latLngToLayerPoint(d.LatLng).x}, ${
       mymap.latLngToLayerPoint(d.LatLng).y
@@ -169,20 +171,10 @@ let repositionMap = () => {
     "style",
     `transform:translate(${-groupBounds.x}px, ${-groupBounds.y}px`
   );
-  // div.attr(
-  //   "style",
-  //   `transform:translate(${-groupBounds.x}px, ${-groupBounds.y}px)`
-  // );
-
-  // console.log(groupBounds.y);
-  // d3.select(".tooltip").attr(
-  //   "style",
-  //   `top:${-groupBounds.y}px; left:${groupBounds.x}px;`
-  // );
 };
 
 //handle check box clicks to update data
-let handleFilters = cb => {
+let handleCrimeFilters = cb => {
   if (cb.checked == true) {
     checked.push(cb.name);
   } else {
@@ -193,6 +185,8 @@ let handleFilters = cb => {
   }
   addMarkers();
 };
+
+let handleDateFilters = dateRange => {};
 
 //initialize
 addMarkers();

@@ -16,79 +16,99 @@
     <div id="mapid"></div>
     <div id="key">
       <h4>
-        Filters
+        Filter
         <div class="caret"></div>
       </h4>
+      <h5>By crime:</h5>
       <input
         type="checkbox"
         name="LARCENY-FROM VEHICLE"
         id="LARCENY-FROM VEHICLE"
-        onclick="handleFilters(this)"
+        onclick="handleCrimeFilters(this)"
       />
-      <label for="LARCENY-FROM VEHICLE">LARCENY-FROM VEHICLE</label>
+      <label for="LARCENY-FROM VEHICLE" class="LARCENY-FROM-VEHICLE"
+        >LARCENY-FROM VEHICLE</label
+      >
 
       <input
         type="checkbox"
         name="LARCENY-NON VEHICLE"
         id="LARCENY-NON VEHICLE"
-        onclick="handleFilters(this)"
+        onclick="handleCrimeFilters(this)"
         checked
       />
-      <label for="LARCENY-NON VEHICLE">LARCENY-NON VEHICLE</label>
+      <label for="LARCENY-NON VEHICLE" class="LARCENY-NON-VEHICLE"
+        >LARCENY-NON VEHICLE</label
+      >
 
       <input
         type="checkbox"
         name="ROBBERY-PEDESTRIAN"
         id="ROBBERY-PEDESTRIAN"
-        onclick="handleFilters(this)"
+        onclick="handleCrimeFilters(this)"
       />
-      <label for="ROBBERY-PEDESTRIAN">ROBBERY-PEDESTRIAN</label>
+      <label for="ROBBERY-PEDESTRIAN" class="ROBBERY_PEDESTRIAN"
+        >ROBBERY-PEDESTRIAN</label
+      >
 
       <input
         type="checkbox"
         name="AUTO THEFT"
         id="AUTO THEFT"
-        onclick="handleFilters(this)"
+        onclick="handleCrimeFilters(this)"
       />
-      <label for="AUTO THEFT">AUTO THEFT</label>
+      <label for="AUTO THEFT" class="AUTO-THEFT">AUTO THEFT</label>
 
       <input
         type="checkbox"
         name="AGG ASSAULT"
         id="AGG ASSAULT"
-        onclick="handleFilters(this)"
+        onclick="handleCrimeFilters(this)"
       />
-      <label for="AGG ASSAULT">AGG ASSAULT</label>
+      <label for="AGG ASSAULT" class="AGG-ASSAULT">AGG ASSAULT</label>
 
       <input
         type="checkbox"
         name="ROBBERY-COMMERCIAL"
         id="ROBBERY-COMMERCIAL"
-        onclick="handleFilters(this)"
+        onclick="handleCrimeFilters(this)"
       />
-      <label for="ROBBERY-COMMERCIAL">ROBBERY-COMMERCIAL</label>
+      <label for="ROBBERY-COMMERCIAL" class="ROBBERY-COMMERCIAL"
+        >ROBBERY-COMMERCIAL</label
+      >
 
       <input
         type="checkbox"
         name="ROBBERY-RESIDENCE"
         id="ROBBERY-RESIDENCE"
-        onclick="handleFilters(this)"
+        onclick="handleCrimeFilters(this)"
       />
-      <label for="ROBBERY-RESIDENCE">ROBBERY-RESIDENCE</label>
+      <label for="ROBBERY-RESIDENCE" class="ROBBERY-RESIDENCE"
+        >ROBBERY-RESIDENCE</label
+      >
 
       <input
         type="checkbox"
         name="BURGLARY-RESIDENCE"
         id="BURGLARY-RESIDENCE"
-        onclick="handleFilters(this)"
+        onclick="handleCrimeFilters(this)"
       />
-      <label for="BURGLARY-RESIDENCE">BURGLARY-RESIDENCE</label>
+      <label for="BURGLARY-RESIDENCE" class="BURGLARY-RESIDENCE"
+        >BURGLARY-RESIDENCE</label
+      >
+      <h5>By date:</h5>
+      <select class="filterByDate" onchange="handleDateFilters(this)">
+        <option>This year</option>
+        <option>Last 30 days</option>
+        <option>Last 7 days</option>
+      </select>
     </div>
     <script
       src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
       integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
       crossorigin=""
     ></script>
+    <script src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

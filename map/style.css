@@ -1,5 +1,13 @@
 :root {
   font-size: 62.5%;
+  --LARCENY-FROM-VEHICLE: #e41a1c;
+  --LARCENY-NON-VEHICLE: #377eb8;
+  --ROBBERY-PEDESTRIAN: #4daf4a;
+  --AUTO-THEFT: #984ea3;
+  --AGG-ASSAULT: #ff7f00;
+  --ROBBERY-COMMERCIAL: #ffd92f;
+  --ROBBERY-RESIDENCE: #a65628;
+  --BURGLARY-RESIDENCE: #f781bf;
 }
 html,
 body {
@@ -61,10 +69,6 @@ div.tooltip {
   right: 0;
   background: rgba(248, 248, 255, 0.8);
   z-index: 999;
-  display: grid;
-  grid-template-columns: 20px 1fr;
-  grid-gap: 10px;
-  align-items: center;
   overflow: hidden;
   font-family: sans-serif;
   max-height: 2.5rem;
@@ -72,13 +76,23 @@ div.tooltip {
   transition: 0.3s ease all;
 }
 #key h4 {
-  grid-column-end: span 2;
+  /* grid-column-end: span 2; */
   text-align: center;
   font-size: 1.5rem;
   line-height: 1.5rem;
   margin: 0;
-  padding: 0.5rem;
   cursor: pointer;
+}
+#key h5 {
+  font-size: 1.5rem;
+  margin: 0;
+  margin-top: 1.2rem;
+}
+.filterByDate {
+  margin-top: 1.4rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: block;
 }
 .caret {
   width: 0;
@@ -98,9 +112,53 @@ div.tooltip {
   padding: 20px;
   max-height: 800px !important;
 }
-label {
+input[type="checkbox"] + label {
   font-size: 1.4rem;
   cursor: pointer;
+  display: block;
+}
+input[type="checkbox"] {
+  visibility: hidden;
+}
+input[type="checkbox"] + label:before {
+  border: 1px solid #333;
+  content: "\00a0";
+  display: inline-block;
+  font: 16px/1em sans-serif;
+  height: 16px;
+  margin: 0 0.7em 0 0;
+  padding: 0;
+  vertical-align: top;
+  width: 16px;
+}
+.LARCENY-FROM-VEHICLE::before {
+  background: var(--LARCENY-FROM-VEHICLE);
+}
+.LARCENY-NON-VEHICLE::before {
+  background: var(--LARCENY-NON-VEHICLE);
+}
+.ROBBERY_PEDESTRIAN::before {
+  background: var(--ROBBERY-PEDESTRIAN);
+}
+.AUTO-THEFT::before {
+  background: var(--AUTO-THEFT);
+}
+.AGG-ASSAULT::before {
+  background: var(--AGG-ASSAULT);
+}
+.ROBBERY-COMMERCIAL::before {
+  background: var(--ROBBERY-COMMERCIAL);
+}
+.ROBBERY-RESIDENCE::before {
+  background: var(--ROBBERY-RESIDENCE);
+}
+.BURGLARY-RESIDENCE::before {
+  background: var(--BURGLARY-RESIDENCE);
+}
+input[type="checkbox"]:checked + label:before {
+  color: #fff;
+  content: "\2713";
+  text-align: center;
 }
 input {
   cursor: pointer;
