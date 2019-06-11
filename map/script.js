@@ -48,11 +48,12 @@ async function addMarkers() {
     });
 
     //filter data based on date
-    console.log(data);
-
-    // data = data.filter(d => {
-    //   return d.()
-    // });
+    data = data.filter(d => {
+      return (
+        new Date(d.occurDate) < dateRange[1] &&
+        new Date(d.occurDate) > dateRange[0]
+      );
+    });
 
     //give the data a Leaflet.js-friendly LatLng object
     data.forEach(object => {
@@ -89,7 +90,7 @@ async function addMarkers() {
         div
           .transition()
           .duration(100)
-          .style("opacity", 0.9);
+          .style("opacity", 1);
         div
           .html(
             `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
@@ -107,7 +108,7 @@ async function addMarkers() {
         div
           .transition()
           .duration(100)
-          .style("opacity", 0.9);
+          .style("opacity", 1);
         div
           .html(
             `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
@@ -129,7 +130,7 @@ async function addMarkers() {
       div.style("opacity", 0);
     });
     mymap.on("zoomend", () => {
-      div.style("opacity", 0.9);
+      div.style("opacity", 1);
     });
     repositionMap(circles);
   } catch (err) {
@@ -139,7 +140,7 @@ async function addMarkers() {
 
 let repositionToolTip = () => {
   justMoved = true;
-  div.style("opacity", 0.9);
+  div.style("opacity", 1);
   let selectedDot = d3.select("circle.selected-dot");
 
   if (selectedDot._groups[0][0] !== null) {
@@ -186,7 +187,56 @@ let handleCrimeFilters = cb => {
   addMarkers();
 };
 
-let handleDateFilters = dateRange => {};
+// handle date filtering
+let dateRange = [
+  new Date(new Date().setDate(new Date().getDate() - 10000)),
+  today
+];
+let dateSelector = document.querySelector(".dateSelector");
+let handleDateFilters = dateSelection => {
+  let thisYear = new Date().getFullYear();
+  switch (dateSelection.value) {
+    case "This year":
+      //dateRange[0] = new Date(thisYear + `-01-01`);
+      dateRange[0] = new Date(`${thisYear - 1}-12-31`);
+      dateRange[1] = new Date(today);
+      dateSelector.classList.remove("visible");
+      console.log(dateRange);
+      break;
+    case "Last 30 days":
+      dateRange[0] = new Date(new Date().setDate(new Date().getDate() - 31));
+      dateRange[1] = new Date(today);
+      dateSelector.classList.remove("visible");
+      break;
+    case "Last 7 days":
+      dateRange[0] = new Date(new Date().setDate(new Date().getDate() - 8));
+      dateRange[1] = new Date(today);
+      dateSelector.classList.remove("visible");
+      break;
+    case "Custom date range":
+      dateSelector.classList.add("visible");
+      break;
+    default:
+      alert(
+        "Something went wrong when selecting a date, please refresh the page and try again."
+      );
+  }
+  addMarkers();
+};
+
+//custom date range functions
+let changeFromRange = from => {
+  console.log(from);
+  dateRange[0] = new Date(from);
+  console.log(dateRange);
+  addMarkers();
+};
+let changeToRange = to => {
+  console.log(to);
+  dateRange[1] = new Date(to);
+  console.log(dateRange);
+  addMarkers();
+};
 
 //initialize
 addMarkers();

@@ -101,7 +101,25 @@
         <option>This year</option>
         <option>Last 30 days</option>
         <option>Last 7 days</option>
+        <option>Custom date range</option>
       </select>
+      <div class="dateSelector">
+        <label for="dateSelectorFrom">From:</label>
+        <input
+          type="date"
+          name="dateSelector"
+          class="dateSelectorFrom"
+          onchange="changeFromRange(this.value)"
+        />
+        <br />
+        <label for="dateSelectorTo">To:</label>
+        <input
+          type="date"
+          name="dateSelector"
+          class="dateSelectorTo"
+          onchange="changeToRange(this.value)"
+        />
+      </div>
     </div>
     <script
       src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
