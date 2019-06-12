@@ -50,8 +50,14 @@ async function addMarkers() {
     //filter data based on date
     data = data.filter(d => {
       return (
-        new Date(d.occurDate) < dateRange[1] &&
-        new Date(d.occurDate) > dateRange[0]
+        moment(d.occurDate)
+          .tz("America/New_York")
+          .isSameOrAfter(dateRange[0], "day") &&
+        moment(d.occurDate)
+          .tz("America/New_York")
+          .isSameOrBefore(dateRange[1], "day")
+        // new Date(d.occurDate) < dateRange[1] &&
+        // new Date(d.occurDate) > dateRange[0]
       );
     });
 
@@ -186,32 +192,55 @@ let handleCrimeFilters = cb => {
   }
   addMarkers();
 };
-
+let thisYear = new Date().getFullYear();
 // handle date filtering
+moment.tz.add("America/New_York|EST EDT|50 40|0101|1Lz50 1zb0 Op0");
 let dateRange = [
-  new Date(new Date().setDate(new Date().getDate() - 10000)),
-  today
+  new moment(thisYear + "-01-01").tz("America/New_York").format(),
+  moment()
+    .tz("America/New_York")
+    .format()
 ];
 let dateSelector = document.querySelector(".dateSelector");
 let handleDateFilters = dateSelection => {
-  let thisYear = new Date().getFullYear();
   switch (dateSelection.value) {
     case "This year":
       //dateRange[0] = new Date(thisYear + `-01-01`);
-      dateRange[0] = new Date(`${thisYear - 1}-12-31`);
-      dateRange[1] = new Date(today);
+      // dateRange[0] = new Date(`${thisYear - 1}-12-31`);
+      dateRange[0] = moment
+        .tz(thisYear + "-01-01", "America/New_York")
+        .format();
+      // dateRange[1] = new Date(new Date().setDate(today.getDate() + 1));
+      dateRange[1] = moment()
+        .tz("America/New_York")
+        .format();
       dateSelector.classList.remove("visible");
       console.log(dateRange);
       break;
     case "Last 30 days":
-      dateRange[0] = new Date(new Date().setDate(new Date().getDate() - 31));
-      dateRange[1] = new Date(today);
+      // dateRange[0] = new Date(new Date().setDate(new Date().getDate() - 31));
+      dateRange[0] = moment()
+        .subtract(30, "days")
+        .tz("America/New_York")
+        .format();
+      dateRange[1] = moment()
+        .tz("America/New_York")
+        .format();
       dateSelector.classList.remove("visible");
+      console.log(dateRange);
       break;
     case "Last 7 days":
-      dateRange[0] = new Date(new Date().setDate(new Date().getDate() - 8));
-      dateRange[1] = new Date(today);
+      // dateRange[0] = new Date(new Date().setDate(new Date().getDate() - 8));
+      dateRange[0] = moment()
+        .subtract(7, "days")
+        .tz("America/New_York")
+        .format();
+      // dateRange[1] = new Date(new Date().setDate(today.getDate() + 1));
+      dateRange[1] = moment()
+        .tz("America/New_York")
+        .format();
       dateSelector.classList.remove("visible");
+      console.log(dateRange);
       break;
     case "Custom date range":
       dateSelector.classList.add("visible");
@@ -227,13 +256,16 @@ let handleDateFilters = dateSelection => {
 //custom date range functions
 let changeFromRange = from => {
   console.log(from);
-  dateRange[0] = new Date(from);
+  console.log(moment.tz(from, "America/New_York").format());
+  dateRange[0] = moment.tz(from, "America/New_York").format();
+  // console.log(new Date(from).toISOString());
   console.log(dateRange);
   addMarkers();
 };
 let changeToRange = to => {
   console.log(to);
-  dateRange[1] = new Date(to);
+  // dateRange[1] = new Date(to);
+  dateRange[1] = moment.tz(to, "America/New_York").format();
   console.log(dateRange);
   addMarkers();
 };
