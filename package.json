@@ -5,15 +5,26 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node -r esm index.js"
+    "dev": "node -r esm scrape/index.js",
+    "build": "browserify map/script.js -o dist/bundle.js",
+    "watch": "watchify map/script.js -o dist/bundle.js -v"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "adm-zip": "^0.4.13",
     "axios": "^0.18.0",
+    "browserify": "^16.2.3",
     "cheerio": "^1.0.0-rc.3",
     "csvtojson": "^2.0.8",
-    "esm": "^3.2.22"
+    "esm": "^3.2.22",
+    "leaflet-geosearch": "^2.7.0",
+    "watchify": "^3.11.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^10.0.0"
   }
 }

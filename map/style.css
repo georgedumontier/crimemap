@@ -101,7 +101,7 @@ div.tooltip {
   max-height: 0;
   overflow: hidden;
   transition: 0.3s ease all;
-  font-size: 2rem;
+  font-size: 1.4rem;
 }
 .visible {
   max-height: 100vh;

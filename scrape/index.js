@@ -78,7 +78,7 @@ async function go() {
     const jsonArray = await csv().fromFile("./rawdata/COBRA-2019.csv");
     const cleanJSON = await cleanData(jsonArray);
     await fs.writeFile(
-      `./json/COBRA-${thisYear}.json`,
+      `./scrape/json/COBRA-${thisYear}.json`,
       JSON.stringify(cleanJSON),
       err => {
         if (err) {

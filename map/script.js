@@ -1,4 +1,5 @@
 const mymap = L.map("mapid").setView([33.749, -84.388], 13);
+
 let data = null;
 let div = d3
   .select("body")
@@ -6,9 +7,31 @@ let div = d3
   .attr("class", "tooltip")
   .style("opacity", 0);
 let checked = ["LARCENY-NON VEHICLE"];
-let dateFilter = "This year";
+// let dateFilter = "This year";
 let justMoved = false;
-let today = new Date();
+// let today = new Date();
+
+//address search setup with leaflet-geosearch
+// import { OpenStreetMapProvider } from "leaflet-geosearch";
+let leafletGeosearch = require("leaflet-geosearch");
+let OpenStreetMapProvider = leafletGeosearch.OpenStreetMapProvider;
+const provider = new OpenStreetMapProvider();
+let goGetResults = async function(input) {
+  const results = await provider.search({ query: input });
+  console.log(results);
+  let xCoords = results[0].x;
+  let yCoords = results[0].y;
+  let addressMarker = L.marker([xCoords, yCoords]).addTo(mymap);
+  return results;
+};
+window.handleAddressFilter = () => {
+  let addressInput = document.querySelector(".filterByAddress");
+  let addressInputValue = addressInput.value;
+  //validate input
+
+  console.log(addressInputValue);
+  goGetResults(addressInputValue);
+};
 
 L.tileLayer(
   // "https://api.tiles.mapbox.com/styles/mapbox/streets-v11/{z}/{x}/{y}.png?access_token={accessToken}",
@@ -181,6 +204,7 @@ let repositionMap = () => {
 };
 
 //handle check box clicks to update data
+
 let handleCrimeFilters = cb => {
   if (cb.checked == true) {
     checked.push(cb.name);
@@ -192,6 +216,14 @@ let handleCrimeFilters = cb => {
   }
   addMarkers();
 };
+
+let crimeFilters = document.querySelectorAll(".crimeFilter");
+Array.from(crimeFilters).forEach(function(element) {
+  element.addEventListener("click", function() {
+    handleCrimeFilters(element);
+  });
+});
+
 let thisYear = new Date().getFullYear();
 // handle date filtering
 moment.tz.add("America/New_York|EST EDT|50 40|0101|1Lz50 1zb0 Op0");
@@ -201,12 +233,17 @@ let dateRange = [
     .tz("America/New_York")
     .format()
 ];
+
 let dateSelector = document.querySelector(".dateSelector");
+let filterByDate = document.querySelector(".filterByDate");
+filterByDate.addEventListener("change", function(element) {
+  // console.log(element.currentTarget.value);
+  handleDateFilters(element.currentTarget.value);
+});
+
 let handleDateFilters = dateSelection => {
-  switch (dateSelection.value) {
+  switch (dateSelection) {
     case "This year":
-      //dateRange[0] = new Date(thisYear + `-01-01`);
-      // dateRange[0] = new Date(`${thisYear - 1}-12-31`);
       dateRange[0] = moment
         .tz(thisYear + "-01-01", "America/New_York")
         .format();
@@ -215,7 +252,6 @@ let handleDateFilters = dateSelection => {
         .tz("America/New_York")
         .format();
       dateSelector.classList.remove("visible");
-      console.log(dateRange);
       break;
     case "Last 30 days":
       // dateRange[0] = new Date(new Date().setDate(new Date().getDate() - 31));
@@ -227,7 +263,6 @@ let handleDateFilters = dateSelection => {
         .tz("America/New_York")
         .format();
       dateSelector.classList.remove("visible");
-      console.log(dateRange);
       break;
     case "Last 7 days":
       // dateRange[0] = new Date(new Date().setDate(new Date().getDate() - 8));
@@ -240,7 +275,6 @@ let handleDateFilters = dateSelection => {
         .tz("America/New_York")
         .format();
       dateSelector.classList.remove("visible");
-      console.log(dateRange);
       break;
     case "Custom date range":
       dateSelector.classList.add("visible");
@@ -254,6 +288,10 @@ let handleDateFilters = dateSelection => {
 };
 
 //custom date range functions
+let fromDatePicker = document.querySelector(".dateSelectorFrom");
+fromDatePicker.addEventListener("change", function(element) {
+  changeFromRange(element.currentTarget.value);
+});
 let changeFromRange = from => {
   console.log(from);
   console.log(moment.tz(from, "America/New_York").format());
@@ -262,6 +300,10 @@ let changeFromRange = from => {
   console.log(dateRange);
   addMarkers();
 };
+let toDatePicker = document.querySelector(".dateSelectorTo");
+toDatePicker.addEventListener("change", function(element) {
+  changeToRange(element.currentTarget.value);
+});
 let changeToRange = to => {
   console.log(to);
   // dateRange[1] = new Date(to);
