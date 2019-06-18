@@ -1,4 +1,11 @@
 const mymap = L.map("mapid").setView([33.749, -84.388], 13);
+console.log(new Date(new Date().setDate(new Date().getDate() - 10000)));
+// console.log(new Date(new Date("02-04-1992").getDate() + 10000));
+console.log(
+  new Date(
+    new Date("02-04-1992").setDate(new Date("02-04-1992").getDate() + 10000)
+  )
+);
 
 let data = null;
 let div = d3
@@ -7,31 +14,7 @@ let div = d3
   .attr("class", "tooltip")
   .style("opacity", 0);
 let checked = ["LARCENY-NON VEHICLE"];
-// let dateFilter = "This year";
 let justMoved = false;
-// let today = new Date();
-
-//address search setup with leaflet-geosearch
-// import { OpenStreetMapProvider } from "leaflet-geosearch";
-let leafletGeosearch = require("leaflet-geosearch");
-let OpenStreetMapProvider = leafletGeosearch.OpenStreetMapProvider;
-const provider = new OpenStreetMapProvider();
-let goGetResults = async function(input) {
-  const results = await provider.search({ query: input });
-  console.log(results);
-  let xCoords = results[0].x;
-  let yCoords = results[0].y;
-  let addressMarker = L.marker([xCoords, yCoords]).addTo(mymap);
-  return results;
-};
-window.handleAddressFilter = () => {
-  let addressInput = document.querySelector(".filterByAddress");
-  let addressInputValue = addressInput.value;
-  //validate input
-
-  console.log(addressInputValue);
-  goGetResults(addressInputValue);
-};
 
 L.tileLayer(
   // "https://api.tiles.mapbox.com/styles/mapbox/streets-v11/{z}/{x}/{y}.png?access_token={accessToken}",
@@ -57,13 +40,35 @@ let svg = d3
   .append("svg")
   .attr("id", "leaflet-overlay");
 
+//address search setup with leaflet-geosearch
+let leafletGeosearch = require("leaflet-geosearch");
+let OpenStreetMapProvider = leafletGeosearch.OpenStreetMapProvider;
+const provider = new OpenStreetMapProvider();
+const searchControl = leafletGeosearch.GeoSearchControl({ provider: provider });
+mymap.addControl(searchControl);
+let goGetResults = async function(input) {
+  const results = await provider.search({ query: `${input} ATLANTA, GEORGIA` });
+  console.log(results);
+  let coords = [results[0].y, results[0].x];
+  console.log(coords);
+
+  mymap.setView(coords);
+  return results;
+};
+window.handleAddressFilter = () => {
+  let addressInput = document.querySelector(".filterByAddress");
+  let addressInputValue = addressInput.value;
+  //validate input
+
+  console.log(addressInputValue);
+  goGetResults(addressInputValue);
+};
+
 let crimeDots = svg.append("g").attr("class", "leaflet-zoom-hide");
-// g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 async function addMarkers() {
   try {
     data = await d3.json("COBRA-2019.json");
-    //let data = await d3.json("COBRA-2019.json");
 
     //filter data based on the checked array
     data = data.filter(d => {
@@ -79,8 +84,6 @@ async function addMarkers() {
         moment(d.occurDate)
           .tz("America/New_York")
           .isSameOrBefore(dateRange[1], "day")
-        // new Date(d.occurDate) < dateRange[1] &&
-        // new Date(d.occurDate) > dateRange[0]
       );
     });
 
@@ -237,7 +240,6 @@ let dateRange = [
 let dateSelector = document.querySelector(".dateSelector");
 let filterByDate = document.querySelector(".filterByDate");
 filterByDate.addEventListener("change", function(element) {
-  // console.log(element.currentTarget.value);
   handleDateFilters(element.currentTarget.value);
 });
 
@@ -247,14 +249,12 @@ let handleDateFilters = dateSelection => {
       dateRange[0] = moment
         .tz(thisYear + "-01-01", "America/New_York")
         .format();
-      // dateRange[1] = new Date(new Date().setDate(today.getDate() + 1));
       dateRange[1] = moment()
         .tz("America/New_York")
         .format();
       dateSelector.classList.remove("visible");
       break;
     case "Last 30 days":
-      // dateRange[0] = new Date(new Date().setDate(new Date().getDate() - 31));
       dateRange[0] = moment()
         .subtract(30, "days")
         .tz("America/New_York")
@@ -265,12 +265,10 @@ let handleDateFilters = dateSelection => {
       dateSelector.classList.remove("visible");
       break;
     case "Last 7 days":
-      // dateRange[0] = new Date(new Date().setDate(new Date().getDate() - 8));
       dateRange[0] = moment()
         .subtract(7, "days")
         .tz("America/New_York")
         .format();
-      // dateRange[1] = new Date(new Date().setDate(today.getDate() + 1));
       dateRange[1] = moment()
         .tz("America/New_York")
         .format();
@@ -293,11 +291,7 @@ fromDatePicker.addEventListener("change", function(element) {
   changeFromRange(element.currentTarget.value);
 });
 let changeFromRange = from => {
-  console.log(from);
-  console.log(moment.tz(from, "America/New_York").format());
   dateRange[0] = moment.tz(from, "America/New_York").format();
-  // console.log(new Date(from).toISOString());
-  console.log(dateRange);
   addMarkers();
 };
 let toDatePicker = document.querySelector(".dateSelectorTo");
@@ -305,10 +299,7 @@ toDatePicker.addEventListener("change", function(element) {
   changeToRange(element.currentTarget.value);
 });
 let changeToRange = to => {
-  console.log(to);
-  // dateRange[1] = new Date(to);
   dateRange[1] = moment.tz(to, "America/New_York").format();
-  console.log(dateRange);
   addMarkers();
 };
 
