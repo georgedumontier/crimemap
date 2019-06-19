@@ -1,12 +1,15 @@
 const mymap = L.map("mapid").setView([33.749, -84.388], 13);
-console.log(new Date(new Date().setDate(new Date().getDate() - 10000)));
-// console.log(new Date(new Date("02-04-1992").getDate() + 10000));
-console.log(
-  new Date(
-    new Date("02-04-1992").setDate(new Date("02-04-1992").getDate() + 10000)
-  )
-);
-
+import regeneratorRuntime from "regenerator-runtime";
+import moment from "moment-timezone";
+import leaflet from "leaflet";
+import * as d3 from "d3";
+// var d3 = Object.assign(
+//   {},
+//   require("d3-selection"),
+//   require("d3-request"),
+//   require("d3-dispatch"),
+//   require("d3-collection")
+// );
 let data = null;
 let div = d3
   .select("body")
@@ -41,21 +44,60 @@ let svg = d3
   .attr("id", "leaflet-overlay");
 
 //address search setup with leaflet-geosearch
-let leafletGeosearch = require("leaflet-geosearch");
-let OpenStreetMapProvider = leafletGeosearch.OpenStreetMapProvider;
-const provider = new OpenStreetMapProvider();
-const searchControl = leafletGeosearch.GeoSearchControl({ provider: provider });
-mymap.addControl(searchControl);
-let goGetResults = async function(input) {
-  const results = await provider.search({ query: `${input} ATLANTA, GEORGIA` });
-  console.log(results);
-  let coords = [results[0].y, results[0].x];
-  console.log(coords);
+// let leafletGeosearch = require("leaflet-geosearch");
+// let OpenStreetMapProvider = leafletGeosearch.OpenStreetMapProvider;
+// const provider = new OpenStreetMapProvider();
+// const searchControl = leafletGeosearch.GeoSearchControl({ provider: provider });
+// mymap.addControl(searchControl);
+// let goGetResults = async function(input) {
+//   const results = await provider.search({ query: `${input} ATLANTA, GEORGIA` });
+//   console.log(results);
+//   let coords = [results[0].y, results[0].x];
+//   console.log(coords);
 
-  mymap.setView(coords);
-  return results;
+//   mymap.setView(coords);
+//   return results;
+// };
+// import test from "./modules/test";
+// console.log(test);
+// test();
+console.log("anythinsg");
+let addressSearchBar = document.querySelector(".filterByAddress");
+let waitASec = false;
+let startTimer = () => {
+  waitASec = true;
+  setTimeout(function() {
+    waitASec = false;
+  }, 500);
 };
-window.handleAddressFilter = () => {
+addressSearchBar.addEventListener("click", function() {
+  console.log("click");
+  if (waitASec) {
+    return false;
+  } else {
+    console.log("starting timer");
+    startTimer();
+  }
+});
+let sendAddressQuery = async function() {
+  let query = addressSearchBar.value;
+  let response = await fetch(
+    `https://nominatim.openstreetmap.org/search/${query} ATLANTA?format=json`
+  );
+  response = await response.json();
+
+  console.log(response);
+};
+addressSearchBar.addEventListener("keyup", function() {
+  if (waitASec) {
+    return false;
+  } else {
+    console.log("send a request");
+    sendAddressQuery();
+    startTimer();
+  }
+});
+let handleAddressFilter = () => {
   let addressInput = document.querySelector(".filterByAddress");
   let addressInputValue = addressInput.value;
   //validate input
