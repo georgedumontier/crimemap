@@ -1,6 +1,6 @@
 const mymap = L.map("mapid").setView([33.749, -84.388], 13);
-import regeneratorRuntime from "regenerator-runtime";
 import moment from "moment-timezone";
+import regeneratorRuntime from "regenerator-runtime";
 import leaflet from "leaflet";
 import * as d3 from "d3";
 // var d3 = Object.assign(
