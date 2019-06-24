@@ -1,4 +1,4 @@
-import moment from "moment-timezone";
+// import moment from "moment-timezone";
 import regeneratorRuntime from "regenerator-runtime";
 import leaflet from "leaflet";
 import * as d3 from "d3";
@@ -7,6 +7,26 @@ import handleFilters from "./modules/HandleFilters";
 import map from "./modules/Map.js";
 
 const { mymap } = map;
+
+// console.log(
+//   new Date("1992-02-04").toLocaleString("en-US", {
+//     timeZone: "America/New_York"
+//   })
+// );
+// console.log(
+//   new Date("1992/02/04").toLocaleDateString("en-US", {
+//     timeZone: "America/New_York"
+//   })
+// );
+
+console.log(
+  new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString(
+    "en-US",
+    {
+      timeZone: "America/New_York"
+    }
+  )
+);
 
 L.tileLayer(
   // "https://api.tiles.mapbox.com/styles/mapbox/streets-v11/{z}/{x}/{y}.png?access_token={accessToken}",

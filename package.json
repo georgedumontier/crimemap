@@ -22,8 +22,6 @@
     "esm": "^3.2.22",
     "leaflet": "^1.5.1",
     "leaflet-geosearch": "^2.7.0",
-    "moment": "^2.24.0",
-    "moment-timezone": "^0.5.25",
     "regenerator-runtime": "^0.13.2",
     "watchify": "^3.11.1"
   },

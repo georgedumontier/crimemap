@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import handleFilters from "./HandleFilters";
-import moment from "moment-timezone";
+// import moment from "moment-timezone";
 import map from "./Map.js";
 const { mymap, svg, crimeDots } = map;
 import reposition from "./Reposition";
@@ -19,13 +19,18 @@ async function addMarkers() {
 
     //filter data based on date
     data = data.filter(d => {
+      // return (
+      //   moment(d.occurDate)
+      //     .tz("America/New_York")
+      //     .isSameOrAfter(handleFilters.dates.dateRange[0], "day") &&
+      //   moment(d.occurDate)
+      //     .tz("America/New_York")
+      //     .isSameOrBefore(handleFilters.dates.dateRange[1], "day")
+      // );
+      let occurDate = new Date(d.occurDate.replace(/-/g, "/"));
       return (
-        moment(d.occurDate)
-          .tz("America/New_York")
-          .isSameOrAfter(handleFilters.dates.dateRange[0], "day") &&
-        moment(d.occurDate)
-          .tz("America/New_York")
-          .isSameOrBefore(handleFilters.dates.dateRange[1], "day")
+        new Date(occurDate) > new Date(handleFilters.dates.dateRange[0]) &&
+        new Date(occurDate) < new Date(handleFilters.dates.dateRange[1])
       );
     });
 
