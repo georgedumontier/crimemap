@@ -27,7 +27,7 @@ body {
   position: relative;
 }
 g.leaflet-zoom-hide > circle {
-  r: 6;
+  /* r: 6; */
   opacity: 0.8;
   transition: 0.2s ease r;
   stroke: black;
@@ -37,7 +37,7 @@ g.leaflet-zoom-hide > circle {
 g.leaflet-zoom-hide > .selected-dot {
   opacity: 1 !important;
   stroke-opacity: 1 !important;
-  r: 8 !important;
+  /* r: 8 !important; */
 }
 div.tooltip {
   position: absolute;

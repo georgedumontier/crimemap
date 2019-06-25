@@ -19,14 +19,6 @@ async function addMarkers() {
 
     //filter data based on date
     data = data.filter(d => {
-      // return (
-      //   moment(d.occurDate)
-      //     .tz("America/New_York")
-      //     .isSameOrAfter(handleFilters.dates.dateRange[0], "day") &&
-      //   moment(d.occurDate)
-      //     .tz("America/New_York")
-      //     .isSameOrBefore(handleFilters.dates.dateRange[1], "day")
-      // );
       let occurDate = new Date(d.occurDate.replace(/-/g, "/"));
       return (
         new Date(occurDate) > new Date(handleFilters.dates.dateRange[0]) &&
@@ -60,7 +52,7 @@ async function addMarkers() {
         div.style("opacity", 0);
         d3.select(".selected-dot").attr("class", "");
       } else {
-        justMoved = false;
+        reposition.justMoved = false;
       }
     });
 
@@ -68,36 +60,61 @@ async function addMarkers() {
     circles
       .enter()
       .append("circle")
+      .attr("r", 6)
       .on("mouseenter", function(d) {
-        d3.select(this).attr("class", "selected-dot");
+        d3.select(this)
+          .attr("class", "selected-dot")
+          .attr("r", 8);
         div
           .transition()
           .duration(100)
           .style("opacity", 1);
+        let selectedDot = d3.select(".selected-dot");
+        let toolTipLayerPoint = mymap.latLngToLayerPoint(
+          selectedDot._groups[0][0].__data__.LatLng
+        );
+        let toolTipPxCoords = mymap.layerPointToContainerPoint(
+          toolTipLayerPoint
+        );
+
         div
           .html(
             `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
           )
-          .style("left", d3.event.pageX + "px")
-          .style("top", d3.event.pageY + "px");
+          .style("top", toolTipPxCoords.y + "px")
+          .style("left", toolTipPxCoords.x + "px");
       })
       .on("mouseleave", function(d) {
-        d3.select(this).attr("class", "");
+        d3.select(this)
+          .attr("class", "")
+          .attr("r", 6);
         div.style("opacity", 0).style("top", "-500px");
       })
       .on("click touchstart", function(d) {
         d3.select(".selected-dot").attr("class", "");
-        d3.select(this).attr("class", "selected-dot");
+        d3.select(this)
+          .attr("class", "selected-dot")
+          .attr("r", 8);
         div
           .transition()
           .duration(100)
           .style("opacity", 1);
+        let selectedDot = d3.select(".selected-dot");
+        let toolTipLayerPoint = mymap.latLngToLayerPoint(
+          selectedDot._groups[0][0].__data__.LatLng
+        );
+        let toolTipPxCoords = mymap.layerPointToContainerPoint(
+          toolTipLayerPoint
+        );
+        console.log(toolTipPxCoords);
         div
           .html(
             `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
           )
-          .style("left", d3.event.pageX + "px")
-          .style("top", d3.event.pageY + "px");
+          .style("top", toolTipPxCoords.y + "px")
+          .style("left", toolTipPxCoords.x + "px");
+        // .style("left", d3.event.pageX + "px")
+        // .style("top", d3.event.pageY + "px");
       });
 
     d3.selectAll("circle").style("fill", d => {
@@ -111,7 +128,7 @@ async function addMarkers() {
     mymap.on("zoomstart", () => reposition.map(circles));
     mymap.on("moveend", () => reposition.map(circles));
     // slight problem with reposition.tooltip -- affects mobile
-    //mymap.on("move", reposition.toolTip);
+    mymap.on("move", reposition.tooltip);
     mymap.on("zoomstart", () => {
       div.style("opacity", 0);
     });

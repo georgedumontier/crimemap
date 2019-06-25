@@ -55,14 +55,6 @@ function _addMarkers() {
             }); //filter data based on date
 
             data = data.filter(function (d) {
-              // return (
-              //   moment(d.occurDate)
-              //     .tz("America/New_York")
-              //     .isSameOrAfter(handleFilters.dates.dateRange[0], "day") &&
-              //   moment(d.occurDate)
-              //     .tz("America/New_York")
-              //     .isSameOrBefore(handleFilters.dates.dateRange[1], "day")
-              // );
               var occurDate = new Date(d.occurDate.replace(/-/g, "/"));
               return new Date(occurDate) > new Date(_HandleFilters["default"].dates.dateRange[0]) && new Date(occurDate) < new Date(_HandleFilters["default"].dates.dateRange[1]);
             }); //give the data a Leaflet.js-friendly LatLng object
@@ -89,22 +81,30 @@ function _addMarkers() {
                 div.style("opacity", 0);
                 d3.select(".selected-dot").attr("class", "");
               } else {
-                justMoved = false;
+                _Reposition["default"].justMoved = false;
               }
             }); //add a circle for every crime
 
-            circles.enter().append("circle").on("mouseenter", function (d) {
-              d3.select(this).attr("class", "selected-dot");
+            circles.enter().append("circle").attr("r", 6).on("mouseenter", function (d) {
+              d3.select(this).attr("class", "selected-dot").attr("r", 8);
               div.transition().duration(100).style("opacity", 1);
-              div.html("<p>".concat(d.location, "</p><p>").concat(d.UCRliteral, "</p><p>").concat(d.occurDate, "</p>")).style("left", d3.event.pageX + "px").style("top", d3.event.pageY + "px");
+              var selectedDot = d3.select(".selected-dot");
+              var toolTipLayerPoint = mymap.latLngToLayerPoint(selectedDot._groups[0][0].__data__.LatLng);
+              var toolTipPxCoords = mymap.layerPointToContainerPoint(toolTipLayerPoint);
+              div.html("<p>".concat(d.location, "</p><p>").concat(d.UCRliteral, "</p><p>").concat(d.occurDate, "</p>")).style("top", toolTipPxCoords.y + "px").style("left", toolTipPxCoords.x + "px");
             }).on("mouseleave", function (d) {
-              d3.select(this).attr("class", "");
+              d3.select(this).attr("class", "").attr("r", 6);
               div.style("opacity", 0).style("top", "-500px");
             }).on("click touchstart", function (d) {
               d3.select(".selected-dot").attr("class", "");
-              d3.select(this).attr("class", "selected-dot");
+              d3.select(this).attr("class", "selected-dot").attr("r", 8);
               div.transition().duration(100).style("opacity", 1);
-              div.html("<p>".concat(d.location, "</p><p>").concat(d.UCRliteral, "</p><p>").concat(d.occurDate, "</p>")).style("left", d3.event.pageX + "px").style("top", d3.event.pageY + "px");
+              var selectedDot = d3.select(".selected-dot");
+              var toolTipLayerPoint = mymap.latLngToLayerPoint(selectedDot._groups[0][0].__data__.LatLng);
+              var toolTipPxCoords = mymap.layerPointToContainerPoint(toolTipLayerPoint);
+              console.log(toolTipPxCoords);
+              div.html("<p>".concat(d.location, "</p><p>").concat(d.UCRliteral, "</p><p>").concat(d.occurDate, "</p>")).style("top", toolTipPxCoords.y + "px").style("left", toolTipPxCoords.x + "px"); // .style("left", d3.event.pageX + "px")
+              // .style("top", d3.event.pageY + "px");
             });
             d3.selectAll("circle").style("fill", function (d) {
               return colors[d.UCRliteral];
@@ -118,8 +118,8 @@ function _addMarkers() {
             mymap.on("moveend", function () {
               return _Reposition["default"].map(circles);
             }); // slight problem with reposition.tooltip -- affects mobile
-            //mymap.on("move", reposition.toolTip);
 
+            mymap.on("move", _Reposition["default"].tooltip);
             mymap.on("zoomstart", function () {
               div.style("opacity", 0);
             });
@@ -129,20 +129,20 @@ function _addMarkers() {
 
             _Reposition["default"].map(circles);
 
-            _context.next = 23;
+            _context.next = 24;
             break;
 
-          case 20:
-            _context.prev = 20;
+          case 21:
+            _context.prev = 21;
             _context.t0 = _context["catch"](0);
             console.error(_context.t0);
 
-          case 23:
+          case 24:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 20]]);
+    }, _callee, null, [[0, 21]]);
   }));
   return _addMarkers.apply(this, arguments);
 }
@@ -330,15 +330,16 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 var mymap = _Map["default"].mymap,
     svg = _Map["default"].svg,
     crimeDots = _Map["default"].crimeDots;
-var selectedDot = d3.select("circle.selected-dot");
-var div = document.querySelector(".tooltip");
+var selectedDot = d3.select(".selected-dot");
+var div = d3.select(".tooltip");
 var reposition = {
   justMoved: false
 };
 
 reposition.tooltip = function () {
+  selectedDot = d3.select(".selected-dot");
   reposition.justMoved = true;
-  div.style("opacity", 1);
+  div.style("opacity", 1); //check for a selected dot
 
   if (selectedDot._groups[0][0] !== null) {
     var toolTipLayerPoint = mymap.latLngToLayerPoint(selectedDot._groups[0][0].__data__.LatLng);
@@ -384,17 +385,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var mymap = _Map["default"].mymap; // console.log(
-//   new Date("1992-02-04").toLocaleString("en-US", {
-//     timeZone: "America/New_York"
-//   })
-// );
-// console.log(
-//   new Date("1992/02/04").toLocaleDateString("en-US", {
-//     timeZone: "America/New_York"
-//   })
-// );
-
+var mymap = _Map["default"].mymap;
 console.log(new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString("en-US", {
   timeZone: "America/New_York"
 }));

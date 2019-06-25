@@ -2,16 +2,17 @@ import * as d3 from "d3";
 import map from "./Map";
 import leaflet from "leaflet";
 const { mymap, svg, crimeDots } = map;
-const selectedDot = d3.select("circle.selected-dot");
-const div = document.querySelector(".tooltip");
+let selectedDot = d3.select(".selected-dot");
+let div = d3.select(".tooltip");
 
 const reposition = {
   justMoved: false
 };
 reposition.tooltip = () => {
+  selectedDot = d3.select(".selected-dot");
   reposition.justMoved = true;
   div.style("opacity", 1);
-
+  //check for a selected dot
   if (selectedDot._groups[0][0] !== null) {
     let toolTipLayerPoint = mymap.latLngToLayerPoint(
       selectedDot._groups[0][0].__data__.LatLng

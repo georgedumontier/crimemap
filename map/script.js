@@ -8,17 +8,6 @@ import map from "./modules/Map.js";
 
 const { mymap } = map;
 
-// console.log(
-//   new Date("1992-02-04").toLocaleString("en-US", {
-//     timeZone: "America/New_York"
-//   })
-// );
-// console.log(
-//   new Date("1992/02/04").toLocaleDateString("en-US", {
-//     timeZone: "America/New_York"
-//   })
-// );
-
 console.log(
   new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString(
     "en-US",
