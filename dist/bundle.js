@@ -44,10 +44,11 @@ function _addMarkers() {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
-            _context.next = 3;
+            console.log("testing netlify");
+            _context.next = 4;
             return d3.json("COBRA-2019.json");
 
-          case 3:
+          case 4:
             data = _context.sent;
             //filter data based on the checked array
             data = data.filter(function (d) {
@@ -102,7 +103,6 @@ function _addMarkers() {
               var selectedDot = d3.select(".selected-dot");
               var toolTipLayerPoint = mymap.latLngToLayerPoint(selectedDot._groups[0][0].__data__.LatLng);
               var toolTipPxCoords = mymap.layerPointToContainerPoint(toolTipLayerPoint);
-              console.log(toolTipPxCoords);
               div.html("<p>".concat(d.location, "</p><p>").concat(d.UCRliteral, "</p><p>").concat(d.occurDate, "</p>")).style("top", toolTipPxCoords.y + "px").style("left", toolTipPxCoords.x + "px"); // .style("left", d3.event.pageX + "px")
               // .style("top", d3.event.pageY + "px");
             });
@@ -129,20 +129,20 @@ function _addMarkers() {
 
             _Reposition["default"].map(circles);
 
-            _context.next = 24;
+            _context.next = 25;
             break;
 
-          case 21:
-            _context.prev = 21;
+          case 22:
+            _context.prev = 22;
             _context.t0 = _context["catch"](0);
             console.error(_context.t0);
 
-          case 24:
+          case 25:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 21]]);
+    }, _callee, null, [[0, 22]]);
   }));
   return _addMarkers.apply(this, arguments);
 }
@@ -305,7 +305,6 @@ var map = {
 };
 map.svg = d3.select(map.mymap.getPanes().overlayPane).append("svg").attr("id", "leaflet-overlay");
 map.crimeDots = map.svg.append("g").attr("class", "leaflet-zoom-hide crimeDots");
-console.log(map.crimeDots);
 var _default = map;
 exports["default"] = _default;
 

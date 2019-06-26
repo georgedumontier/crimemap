@@ -9,5 +9,4 @@ map.svg = d3
 map.crimeDots = map.svg
   .append("g")
   .attr("class", "leaflet-zoom-hide crimeDots");
-console.log(map.crimeDots);
 export default map;

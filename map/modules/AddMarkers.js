@@ -10,6 +10,7 @@ const div = d3.select(".tooltip");
 
 async function addMarkers() {
   try {
+    console.log("testing netlify");
     data = await d3.json("COBRA-2019.json");
 
     //filter data based on the checked array
@@ -106,7 +107,6 @@ async function addMarkers() {
         let toolTipPxCoords = mymap.layerPointToContainerPoint(
           toolTipLayerPoint
         );
-        console.log(toolTipPxCoords);
         div
           .html(
             `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
