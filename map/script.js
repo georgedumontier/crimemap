@@ -38,7 +38,7 @@ L.tileLayer(
 addMarkers();
 
 //address searching stuff --(not working)--
-let addressSearchBar = document.querySelector(".filterByAddress");
+/*let addressSearchBar = document.querySelector(".filterByAddress");
 let waitASec = false;
 let startTimer = () => {
   waitASec = true;
@@ -77,7 +77,7 @@ let handleAddressFilter = () => {
   let addressInput = document.querySelector(".filterByAddress");
   let addressInputValue = addressInput.value;
   goGetResults(addressInputValue);
-};
+};*/
 
 //handle check box clicks to update data
 let handleCrimeFilters = cb => {

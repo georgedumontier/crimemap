@@ -380,10 +380,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
+// import moment from "moment-timezone";
 var mymap = _Map["default"].mymap;
 console.log(new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString("en-US", {
   timeZone: "America/New_York"
@@ -401,19 +398,16 @@ L.tileLayer( // "https://api.tiles.mapbox.com/styles/mapbox/streets-v11/{z}/{x}/
 
 (0, _AddMarkers["default"])(); //address searching stuff --(not working)--
 
-var addressSearchBar = document.querySelector(".filterByAddress");
-var waitASec = false;
-
-var startTimer = function startTimer() {
+/*let addressSearchBar = document.querySelector(".filterByAddress");
+let waitASec = false;
+let startTimer = () => {
   waitASec = true;
-  setTimeout(function () {
+  setTimeout(function() {
     waitASec = false;
   }, 500);
 };
-
-addressSearchBar.addEventListener("click", function () {
+addressSearchBar.addEventListener("click", function() {
   console.log("click");
-
   if (waitASec) {
     return false;
   } else {
@@ -421,45 +415,16 @@ addressSearchBar.addEventListener("click", function () {
     startTimer();
   }
 });
+let sendAddressQuery = async function() {
+  let query = addressSearchBar.value;
+  let response = await fetch(
+    `https://nominatim.openstreetmap.org/search/${query} ATLANTA?format=json`
+  );
+  response = await response.json();
 
-var sendAddressQuery =
-/*#__PURE__*/
-function () {
-  var _ref = _asyncToGenerator(
-  /*#__PURE__*/
-  _regeneratorRuntime["default"].mark(function _callee() {
-    var query, response;
-    return _regeneratorRuntime["default"].wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            query = addressSearchBar.value;
-            _context.next = 3;
-            return fetch("https://nominatim.openstreetmap.org/search/".concat(query, " ATLANTA?format=json"));
-
-          case 3:
-            response = _context.sent;
-            _context.next = 6;
-            return response.json();
-
-          case 6:
-            response = _context.sent;
-            console.log(response);
-
-          case 8:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
-  }));
-
-  return function sendAddressQuery() {
-    return _ref.apply(this, arguments);
-  };
-}();
-
-addressSearchBar.addEventListener("keyup", function () {
+  console.log(response);
+};
+addressSearchBar.addEventListener("keyup", function() {
   if (waitASec) {
     return false;
   } else {
@@ -468,13 +433,12 @@ addressSearchBar.addEventListener("keyup", function () {
     startTimer();
   }
 });
-
-var handleAddressFilter = function handleAddressFilter() {
-  var addressInput = document.querySelector(".filterByAddress");
-  var addressInputValue = addressInput.value;
+let handleAddressFilter = () => {
+  let addressInput = document.querySelector(".filterByAddress");
+  let addressInputValue = addressInput.value;
   goGetResults(addressInputValue);
-}; //handle check box clicks to update data
-
+};*/
+//handle check box clicks to update data
 
 var handleCrimeFilters = function handleCrimeFilters(cb) {
   _HandleFilters["default"].crimes.updateChecked(cb);
