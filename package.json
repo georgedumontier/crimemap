@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node -r esm scrape/index.js",
     "build": "browserify map/script.js -o dist/bundle.js",
-    "minibuild": "browserify map/script.js | uglifyjs > dist/bundle.js",
+    "minibuild": "set NODE_ENV=production && browserify map/script.js | uglifyjs > dist/bundle.js",
     "watch": "watchify map/script.js -o dist/bundle.js -v",
     "scrapeAndBuild": "npm run dev && npm run minibuild"
   },
@@ -31,6 +31,7 @@
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "babelify": "^10.0.0",
+    "envify": "^4.1.0",
     "uglify-js": "^3.6.0"
   },
   "browserify": {

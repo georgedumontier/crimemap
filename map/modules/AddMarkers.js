@@ -7,11 +7,10 @@ import reposition from "./Reposition";
 import leaflet from "leaflet";
 let data = null;
 const div = d3.select(".tooltip");
-
+import dataImport from "../COBRA-2019.json";
 async function addMarkers() {
   try {
-    console.log("testing netlify");
-    data = await d3.json("COBRA-2019.json");
+    data = dataImport;
 
     //filter data based on the checked array
     data = data.filter(d => {
