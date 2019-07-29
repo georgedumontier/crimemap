@@ -1,22 +1,15 @@
-// import moment from "moment-timezone";
-import regeneratorRuntime from "regenerator-runtime";
-import leaflet from "leaflet";
-import * as d3 from "d3";
+import regeneratorRuntime from "regenerator-runtime"; //babel needs this
+import leaflet from "leaflet"; //mapping library with lots of useful methods
+import * as d3 from "d3"; //library that links svg elements to large datasets
+
+// browserify lets you make your own modules and import them where needed
 import addMarkers from "./modules/AddMarkers";
 import handleFilters from "./modules/HandleFilters";
 import map from "./modules/Map.js";
 
-const { mymap } = map;
+const { mymap } = map; //grab the map itself see the Map.js module for more info
 
-console.log(
-  new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString(
-    "en-US",
-    {
-      timeZone: "America/New_York"
-    }
-  )
-);
-
+//add map tiles. It's using the Stamen Designs toner map right now. These are free to use!
 L.tileLayer(
   // "https://api.tiles.mapbox.com/styles/mapbox/streets-v11/{z}/{x}/{y}.png?access_token={accessToken}",
   // "https://api.mapbox.com/styles/v1/georgedumontier/cjw9i8dg505h71cnui04lw1dz/tiles/{z}/{x}/{y}?access_token={accessToken}",
@@ -24,6 +17,7 @@ L.tileLayer(
 
   //"https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}",
   {
+    //These attributions are required by law. Don't delete them.
     attribution:
       'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Map tiles by <a href="https://stamen.com/">Stamen Design</a> under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.',
     //'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -34,7 +28,7 @@ L.tileLayer(
   }
 ).addTo(mymap);
 
-//initialize
+//initialize by position the svg overlay and adding the markers. See /modules/AddMarkers.js for more info.
 addMarkers();
 
 //address searching stuff --(not working)--
@@ -78,6 +72,8 @@ let handleAddressFilter = () => {
   let addressInputValue = addressInput.value;
   goGetResults(addressInputValue);
 };*/
+
+// the rest is just event listeners
 
 //handle check box clicks to update data
 let handleCrimeFilters = cb => {

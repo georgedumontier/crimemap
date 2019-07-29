@@ -1,3 +1,4 @@
+// This is a big module. It's responsible for adding all the markers to the map and positioning them each time a filter is applied or the map is moved.
 import * as d3 from "d3";
 import handleFilters from "./HandleFilters";
 // import moment from "moment-timezone";
@@ -5,12 +6,15 @@ import map from "./Map.js";
 const { mymap, svg, crimeDots } = map;
 import reposition from "./Reposition";
 import leaflet from "leaflet";
+import dataImport from "../COBRA-2019.json";
+
+// a couple global variables. They're still scoped to the module thankfully
 let data = null;
 const div = d3.select(".tooltip");
-import dataImport from "../COBRA-2019.json";
+
 async function addMarkers() {
   try {
-    data = dataImport;
+    data = dataImport; //grab json files
 
     //filter data based on the checked array
     data = data.filter(d => {
@@ -26,7 +30,7 @@ async function addMarkers() {
       );
     });
 
-    //give the data a Leaflet.js-friendly LatLng object
+    //give the data a Leaflet.js-friendly LatLng object (This should probably be done on the backend)
     data.forEach(object => {
       object.LatLng = new L.LatLng(object.latitude, object.longitude);
     });
@@ -56,12 +60,13 @@ async function addMarkers() {
       }
     });
 
-    //add a circle for every crime
+    //add a circle for every crime (d3 is a little complicated, but this is the meat of it)
     circles
-      .enter()
-      .append("circle")
-      .attr("r", 6)
+      .enter() //enter counts how many more data points there are than svgs
+      .append("circle") // adds a circle svg element for each data point
+      .attr("r", 6) //circle radius
       .on("mouseenter", function(d) {
+        //event listenter to make selected dot bigger
         d3.select(this)
           .attr("class", "selected-dot")
           .attr("r", 8);
@@ -70,6 +75,7 @@ async function addMarkers() {
           .duration(100)
           .style("opacity", 1);
         let selectedDot = d3.select(".selected-dot");
+        // move the tooltip to the correct spot on the map with Leaflet's method converting a lat/long to pixel coords
         let toolTipLayerPoint = mymap.latLngToLayerPoint(
           selectedDot._groups[0][0].__data__.LatLng
         );
@@ -77,7 +83,7 @@ async function addMarkers() {
           toolTipLayerPoint
         );
 
-        div
+        div //set html of tool tip
           .html(
             `<p>${d.location}</p><p>${d.UCRliteral}</p><p>${d.occurDate}</p>`
           )

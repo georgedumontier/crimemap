@@ -15,6 +15,8 @@
   </head>
   <body>
     <div id="mapid"></div>
+
+    <!-- The key handles all the filtering inputs -->
     <div id="key">
       <h4>
         Filter
@@ -120,14 +122,13 @@
           class="dateSelectorTo"
         />
       </div>
+      <!-- The address filtering is sort of functional but it needs a better api than OpenStreetMap -->
       <!-- <h5>By address:</h5>
       <input type="text" class="filterByAddress" name="filterByAddress" />
       <label for="filterByAddress"></label> -->
     </div>
     <div class="tooltip"></div>
     <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
-    <!-- <script src="https://momentjs.com/downloads/moment.js"></script> -->
-    <!-- <script src="https://momentjs.com/downloads/moment-timezone.js"></script> -->
     <!-- <script
       src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
       integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
@@ -135,5 +136,7 @@
     ></script> -->
     <!-- <script src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js"></script> -->
     <!-- <script src="script.js"></script> -->
+
+    <!-- ^^ All of these dependencies are bundled together with browserify now -->
     <script src="../dist/bundle.js" type="application/javascript"></script>
 </html>
