@@ -91,12 +91,14 @@ async function addMarkers() {
           .style("left", toolTipPxCoords.x + "px");
       })
       .on("mouseleave", function(d) {
+        //tooltip event listeners
         d3.select(this)
           .attr("class", "")
           .attr("r", 6);
         div.style("opacity", 0).style("top", "-500px");
       })
       .on("click touchstart", function(d) {
+        // tooltip event listeners
         d3.select(".selected-dot").attr("class", "");
         d3.select(this)
           .attr("class", "selected-dot")
@@ -118,12 +120,10 @@ async function addMarkers() {
           )
           .style("top", toolTipPxCoords.y + "px")
           .style("left", toolTipPxCoords.x + "px");
-        // .style("left", d3.event.pageX + "px")
-        // .style("top", d3.event.pageY + "px");
       });
 
     d3.selectAll("circle").style("fill", d => {
-      return colors[d.UCRliteral];
+      return colors[d.UCRliteral]; //map the color of the dot to the type of crime
     });
 
     //get rid of any extra circles
@@ -132,7 +132,6 @@ async function addMarkers() {
     //reposition map when zoomed or dragged
     mymap.on("zoomstart", () => reposition.map(circles));
     mymap.on("moveend", () => reposition.map(circles));
-    // slight problem with reposition.tooltip -- affects mobile
     mymap.on("move", reposition.tooltip);
     mymap.on("zoomstart", () => {
       div.style("opacity", 0);

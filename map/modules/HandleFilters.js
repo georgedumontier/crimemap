@@ -1,13 +1,13 @@
-// import moment from "moment-timezone";
-// moment.tz.add("America/New_York|EST EDT|50 40|0101|1Lz50 1zb0 Op0");
 const dateSelector = document.querySelector(".dateSelector");
 
+// Sets the initially checked filter - would also need to change the input to match
 const handleFilters = {
   crimes: {
     checked: ["LARCENY-NON VEHICLE"]
   },
   dates: {}
 };
+// compares which filters are checked to what's in the array and updates accordingly
 handleFilters.crimes.updateChecked = cb => {
   if (cb.checked == true) {
     handleFilters.crimes.checked.push(cb.name);
@@ -18,16 +18,10 @@ handleFilters.crimes.updateChecked = cb => {
     }
   }
 };
-handleFilters.dates.thisYear = new Date().getFullYear();
-// handleFilters.dates.dateRange = [
-//   new moment(handleFilters.dates.thisYear + "-01-01")
-//     .tz("America/New_York")
-//     .format(),
-//   moment()
-//     .tz("America/New_York")
-//     .format()
-// ];
-// set default date range
+
+handleFilters.dates.thisYear = new Date().getFullYear(); // set the current year in the object
+
+//set default date range for filtering to this year
 handleFilters.dates.dateRange = [
   new Date(`${handleFilters.dates.thisYear - 1}/12/31`).toLocaleDateString(
     "en-US",
@@ -42,20 +36,15 @@ handleFilters.dates.dateRange = [
     }
   )
 ];
-console.log(handleFilters.dates.dateRange);
+//hide the date picker for custom date filtering
 let hideDatePicker = () => {
   dateSelector.classList.remove("visible");
 };
+
+//switch case for the different date filtering options
 handleFilters.dates.updateDates = dateSelection => {
   switch (dateSelection) {
     case "This year":
-      // handleFilters.dates.dateRange[0] = moment
-      //   .tz(handleFilters.dates.thisYear + "-01-01", "America/New_York")
-      //   .format();
-      // handleFilters.dates.dateRange[1] = moment()
-      //   .tz("America/New_York")
-      //   .format();
-      // dateSelector.classList.remove("visible");
       handleFilters.dates.dateRange = [
         new Date(
           `${handleFilters.dates.thisYear - 1}/12/31`
@@ -68,18 +57,9 @@ handleFilters.dates.updateDates = dateSelection => {
           timeZone: "America/New_York"
         })
       ];
-      console.log(handleFilters.dates.dateRange);
       hideDatePicker();
       break;
     case "Last 30 days":
-      // handleFilters.dates.dateRange[0] = moment()
-      //   .subtract(30, "days")
-      //   .tz("America/New_York")
-      //   .format();
-      // handleFilters.dates.dateRange[1] = moment()
-      //   .tz("America/New_York")
-      //   .format();
-      // dateSelector.classList.remove("visible");
       handleFilters.dates.dateRange = [
         new Date(
           new Date().setDate(new Date().getDate() - 31)
@@ -95,17 +75,6 @@ handleFilters.dates.updateDates = dateSelection => {
       hideDatePicker();
       break;
     case "Last 7 days":
-      //   handleFilters.dates.dateRange[0] = moment()
-      //     .subtract(7, "days")
-      //     .tz("America/New_York")
-      //     .format();
-      //   handleFilters.dates.dateRange[1] = moment()
-      //     .tz("America/New_York")
-      //     .format();
-      //   dateSelector.classList.remove("visible");
-      //   break;
-      // case "Custom date range":
-      //   dateSelector.classList.add("visible");
       handleFilters.dates.dateRange = [
         new Date(
           new Date().setDate(new Date().getDate() - 8)
@@ -124,15 +93,14 @@ handleFilters.dates.updateDates = dateSelection => {
       dateSelector.classList.add("visible");
       break;
     default:
+      //maybe should do more error handling here.
       alert(
         "Something went wrong when selecting a date, please refresh the page and try again."
       );
   }
 };
+// update the first part of the custom date range filtering. the 'from range'
 handleFilters.dates.changeFromRange = from => {
-  // handleFilters.dates.dateRange[0] = moment
-  //   .tz(from, "America/New_York")
-  //   .format();
   from = new Date(from.replace(/-/g, "/"));
 
   handleFilters.dates.dateRange[0] = new Date(
@@ -140,10 +108,10 @@ handleFilters.dates.changeFromRange = from => {
   ).toLocaleDateString("en-US", {
     timeZone: "America/New_York"
   });
-  console.log(handleFilters.dates.dateRange);
 };
+// update the second part of the custom date range filtering. the 'to range'
 handleFilters.dates.changeToRange = to => {
-  // dateRange[1] = moment.tz(to, "America/New_York").format();
+  // this is a weird hack. By replacing the hyphens with slashes, it solves the issue of timezones being off by just an hour.
   to = new Date(to.replace(/-/g, "/"));
 
   handleFilters.dates.dateRange[1] = new Date(
@@ -151,7 +119,6 @@ handleFilters.dates.changeToRange = to => {
   ).toLocaleDateString("en-US", {
     timeZone: "America/New_York"
   });
-  console.log(handleFilters.dates.dateRange);
 };
 
-export default handleFilters;
+export default handleFilters; // Just export the object we've been adding to and updating. Modules are great.
